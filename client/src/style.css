@@ -59,6 +59,57 @@ p {
   padding: 0 64px;
   min-height: 100svh;
 }
+.drop-page-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  pointer-events: none;
+  background: rgba(62, 185, 0, 0.2);
+  backdrop-filter: blur(4px);
+}
+.drop-page-message {
+  width: min(100%, 430px);
+  padding: 42px 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 10px;
+  color: #28573e;
+  background: #fff;
+  border: 2px dashed #649b70;
+  border-radius: 20px;
+  box-shadow: 0 20px 55px #2b573c2b;
+}
+.drop-page-icon {
+  width: 68px;
+  height: 68px;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  background: #347958;
+  border-radius: 20px;
+  margin-bottom: 5px;
+}
+.drop-page-message strong {
+  font-size: 20px;
+  font-weight: 650;
+}
+.drop-page-message > span:last-child {
+  font-size: 13px;
+  color: #647a69;
+}
+.drop-feedback-enter-active,
+.drop-feedback-leave-active {
+  transition: opacity 0.16s ease;
+}
+.drop-feedback-enter-from,
+.drop-feedback-leave-to {
+  opacity: 0;
+}
 .brand {
   display: inline-flex;
   align-items: center;
@@ -85,7 +136,9 @@ p {
 .brand-dot {
   color: #278458;
 }
-.hero-brand { margin-bottom: 42px; }
+.hero-brand {
+  margin-bottom: 42px;
+}
 .main-layout {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -792,7 +845,9 @@ p {
     text-align: center;
     padding: 0;
   }
-  .hero-brand { margin-bottom: 30px; }
+  .hero-brand {
+    margin-bottom: 30px;
+  }
   .eyebrow {
     justify-content: center;
     margin-bottom: 20px;
@@ -836,7 +891,9 @@ p {
   .result-panel h2 {
     font-size: 29px;
   }
-  .result-panel h1 { font-size: 25px; }
+  .result-panel h1 {
+    font-size: 25px;
+  }
 }
 @media (prefers-reduced-motion: reduce) {
   *,

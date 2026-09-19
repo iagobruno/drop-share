@@ -36,9 +36,8 @@ function selectFiles(event: Event) {
   input.value = '';
 }
 
-function dropFiles(event: DragEvent) {
+function finishDrop() {
   dragging.value = false;
-  if (event.dataTransfer?.files) emit('addFiles', event.dataTransfer.files);
 }
 
 function togglePassword() {
@@ -57,7 +56,7 @@ function togglePassword() {
         :class="{ 'is-dragging': dragging }"
         @dragover.prevent="dragging = true"
         @dragleave.prevent="dragging = false"
-        @drop.prevent="dropFiles"
+        @drop.prevent="finishDrop"
         @click="picker?.click()"
       >
         <span class="upload-art"><span class="file-back" /><span class="file-front"><AppIcon name="upload" :size="27" /></span><span class="art-plus"><AppIcon name="plus" :size="13" /></span></span>

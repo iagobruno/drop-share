@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
+import AppIcon from './components/AppIcon.vue';
 import DownloadPage from './components/DownloadPage.vue';
 import HomeIntroduction from './components/HomeIntroduction.vue';
 import ShareForm from './components/ShareForm.vue';
@@ -23,6 +24,7 @@ const loadingShare = ref(Boolean(shareId));
 const downloadPassword = ref('');
 const downloading = ref(false);
 const downloaded = ref(false);
+const isDraggingFiles = ref(false);
 
 const totalBytes = computed(() => files.value.reduce((sum, file) => sum + file.size, 0));
 const totalLabel = computed(() => formatBytes(totalBytes.value));
@@ -43,6 +45,31 @@ function addFiles(incoming: FileList) {
 
 function removeFile(index: number) {
   if (!sending.value) files.value.splice(index, 1);
+}
+
+function isFileDrag(event: DragEvent) {
+  return Array.from(event.dataTransfer?.types ?? []).includes('Files');
+}
+
+function handleWindowDragEnter(event: DragEvent) {
+  event.preventDefault();
+  if (isFileDrag(event)) isDraggingFiles.value = true;
+}
+
+function handleWindowDragOver(event: DragEvent) {
+  event.preventDefault();
+  if (isFileDrag(event)) isDraggingFiles.value = true;
+}
+
+function handleWindowDragLeave(event: DragEvent) {
+  if (!isFileDrag(event) || event.relatedTarget) return;
+  isDraggingFiles.value = false;
+}
+
+function handleWindowDrop(event: DragEvent) {
+  event.preventDefault();
+  isDraggingFiles.value = false;
+  if (event.dataTransfer?.files?.length) addFiles(event.dataTransfer.files);
 }
 
 function reset() {
@@ -130,11 +157,35 @@ async function download() {
   }
 }
 
-onMounted(loadShare);
+onMounted(() => {
+  void loadShare();
+  if (!shareId) {
+    window.addEventListener('dragenter', handleWindowDragEnter, true);
+    window.addEventListener('dragover', handleWindowDragOver, true);
+    window.addEventListener('dragleave', handleWindowDragLeave, true);
+    window.addEventListener('drop', handleWindowDrop, true);
+  }
+});
+
+onUnmounted(() => {
+  window.removeEventListener('dragenter', handleWindowDragEnter, true);
+  window.removeEventListener('dragover', handleWindowDragOver, true);
+  window.removeEventListener('dragleave', handleWindowDragLeave, true);
+  window.removeEventListener('drop', handleWindowDrop, true);
+});
 </script>
 
 <template>
   <div class="app-shell">
+    <Transition name="drop-feedback">
+      <div v-if="!shareId && isDraggingFiles" class="drop-page-overlay" aria-live="polite">
+        <div class="drop-page-message">
+          <span class="drop-page-icon"><AppIcon name="upload" :size="34" /></span>
+          <strong>Solte seus arquivos para adicionar</strong>
+          <span>Você pode soltar em qualquer lugar da página</span>
+        </div>
+      </div>
+    </Transition>
     <main v-if="!shareId" class="main-layout">
       <HomeIntroduction />
       <ShareResult
